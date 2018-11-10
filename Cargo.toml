@@ -1,0 +1,7 @@
+[package]
+name = "rusttracer"
+version = "0.1.0"
+authors = ["Wyron <gaph@protonmail.com>"]
+
+[dependencies]
+
