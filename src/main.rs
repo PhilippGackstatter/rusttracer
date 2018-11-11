@@ -30,27 +30,27 @@ fn add_spheres(scene: &mut Scene) {
         1.5,
         Vector3::red(),
     ));
-    // scene.add_sphere(Sphere::new(
-    //     Vector3::new(-2.0, -2.0, 5.0),
-    //     1.0,
-    //     Vector3::purple()
-    // ));
+    scene.add_sphere(Sphere::new(
+        Vector3::new(-2.5, -2.0, 8.0),
+        1.0,
+        Vector3::purple(),
+    ));
 
-    // scene.add_sphere(Sphere::new(
-    //     Vector3::new(2.0, 2.0, 5.0),
-    //     1.5,
-    //     Vector3::orange()
-    // ));
+    scene.add_sphere(Sphere::new(
+        Vector3::new(2.0, 2.0, 5.0),
+        1.0,
+        Vector3::orange(),
+    ));
 
-    // scene.add_sphere(Sphere::new(
-    //     Vector3::new(-3.5, 2.5, 8.0),
-    //     1.5,
-    //     Vector3::green(),
-    // ));
+    scene.add_sphere(Sphere::new(
+        Vector3::new(-3.5, 2.5, 5.0),
+        0.8,
+        Vector3::green(),
+    ));
 }
 
 fn raytrace() -> ppm::PPM {
-    let mut scene = Scene::new();
+    let mut scene = Scene::new(Sphere::new_default_color(Vector3::new(0.0, -5.0, 4.0), 1.0));
     add_spheres(&mut scene);
     let camera = Camera::new_at_zero(WIDTH as f64, HEIGHT as f64, 90.0);
     let mut ppm_img = ppm::PPM::new(WIDTH as u32, HEIGHT as u32);

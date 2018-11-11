@@ -1,6 +1,7 @@
 use std::clone::Clone;
 use std::f64;
 use std::ops::{Add, Div, Mul, Rem, Sub};
+use std::cmp::PartialEq;
 
 #[derive(Debug)]
 pub struct Vector3 {
@@ -52,7 +53,8 @@ impl Vector3 {
     }
 
     pub fn angle(&self, v: Vector3) -> f64 {
-        let angle = (self % &v).acos() / self.len() * v.len();
+        let dot_product = self % &v;
+        let angle = dot_product.acos() / self.len() * v.len();
         angle * 180.0 / f64::consts::PI
     }
 }
@@ -71,7 +73,7 @@ impl<'a, 'b> Rem<&'b Vector3> for &'a Vector3 {
     type Output = f64;
 
     fn rem(self, vec: &'b Vector3) -> f64 {
-        self.x * vec.x + self.y + vec.y + self.z + vec.z
+        self.x * vec.x + self.y * vec.y + self.z * vec.z
     }
 }
 
@@ -134,3 +136,14 @@ impl<'a> Div<f64> for &'a Vector3 {
         }
     }
 }
+
+
+impl PartialEq for Vector3 {
+    fn eq(&self, other: &Vector3) -> bool {
+        self.x == other.x &&
+        self.y == other.y &&
+        self.z == other.z
+    }
+}
+
+impl Eq for Vector3 {}

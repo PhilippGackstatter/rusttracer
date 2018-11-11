@@ -9,12 +9,11 @@ pub struct Scene {
 }
 
 impl Scene {
-    pub fn new() -> Scene {
-        let scene = Scene {
+    pub fn new(light: Sphere) -> Scene {
+        Scene {
             spheres: Vec::new(),
-            light: Sphere::new_default_color(Vector3::new(0.0, -4.0, 5.0), 1.0),
-        };
-        return scene;
+            light,
+        }
     }
 
     pub fn add_sphere(&mut self, sphere: Sphere) {
@@ -59,7 +58,6 @@ impl Scene {
                 // Otherwise we have direct illumination from the light source
                 let normal = hit_sphere.get_normal(&intersection_point);
                 let angle = normal.angle(point_to_light.normalize());
-
                 if angle > 90.0 {
                     return Vector3::zero();
                 } else {
@@ -74,4 +72,22 @@ impl Scene {
             Vector3::zero()
         }
     }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn test_compute_color() {
+        // The light is above the sphere and doesnt intersect with it
+        let mut scene = Scene::new(Sphere::new_default_color(Vector3::new(0.0, 7.0, 3.0), 1.0));
+        let sphere = Sphere::new(Vector3::new(0.0, 0.0, 3.0), 1.0, Vector3::red());
+        scene.add_sphere(sphere);
+
+        let color = scene.compute_color(Vector3::new(0.0, 1.0, 3.0), &scene.spheres[0]);
+
+        assert_eq!(color, Vector3::red())
+    }
+
 }

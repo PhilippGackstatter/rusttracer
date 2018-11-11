@@ -67,7 +67,12 @@ impl Sphere {
 
             Some(t_result)
         } else {
-            Some(-b / (2.0 * a))
+            let t_result = -b / (2.0 * a);
+            if t_result < 0.00001 {
+                return None;
+            } else {
+                return Some(t_result);
+            }
         }
     }
 }
@@ -91,7 +96,7 @@ mod tests {
     #[test]
     fn test_sphere_intersection_2() {
         // Rotate the point 1,0 which is on the circle towards 3,2 by 45 degrees
-        // Rotating a point s,t by an angle to u,v: 
+        // Rotating a point s,t by an angle to u,v:
         // u = s*cos(angle) + t*sin(angle)
         // v = -s*sin(angle) + t*cos(angle)
         // The intersection should then be at height 2 * sin(pi/4) = 1.41...
@@ -106,5 +111,38 @@ mod tests {
         } else {
             panic!();
         }
+    }
+
+    #[test]
+    fn test_get_normal() {
+        let sp = Sphere::new_default_color(Vector3::new(0.0, 0.0, 2.0), 2.0);
+        let normal = sp.get_normal(&Vector3::new(0.0, 2.0, 2.0));
+        assert_eq!(normal, Vector3::new(0.0, 1.0, 0.0));
+    }
+
+    #[test]
+    fn test_sphere_intersection_returns_none_on_miss() {
+        let sphere = Sphere::new(Vector3::new(0.0, 0.0, 3.0), 1.0, Vector3::red());
+        let ray = Ray::new(Vector3::new(0.0, 0.0, 5.0), Vector3::new(0.0, 0.0, 1.0));
+        let result = sphere.intersect(&ray);
+        assert_eq!(result, None);
+    }
+
+    #[test]
+    fn test_sphere_intersection_returns_none_on_miss_2() {
+        // This ray starts at the top of the sphere
+        let sphere = Sphere::new(Vector3::new(0.0, 0.0, 3.0), 1.0, Vector3::red());
+        let ray = Ray::new(Vector3::new(0.0, 1.0, 3.0), Vector3::new(0.0, 0.0, 1.0));
+        let result = sphere.intersect(&ray);
+        assert_eq!(result, None);
+    }
+
+    #[test]
+    fn test_sphere_intersection_returns_none_on_miss_3() {
+        // This ray starts above the sphere
+        let sphere = Sphere::new(Vector3::new(0.0, 0.0, 3.0), 1.0, Vector3::red());
+        let ray = Ray::new(Vector3::new(0.0, 2.0, 3.0), Vector3::new(0.0, 0.0, 1.0));
+        let result = sphere.intersect(&ray);
+        assert_eq!(result, None);
     }
 }
