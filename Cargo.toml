@@ -4,4 +4,4 @@ version = "0.1.0"
 authors = ["Wyron <gaph@protonmail.com>"]
 
 [dependencies]
-
+argparse = "0.2.2"

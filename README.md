@@ -9,16 +9,27 @@ Here's what it can do at the moment.
 
 ## Build & Run
 
-This project uses standard cargo commands.
+The binary accepts a few command line arguments.
 
-To write the result to a ppm file pass a filename
 ```bash
-cargo run picture.ppm
+$ target/debug/rusttracer -h
+Usage:
+  target/debug/rusttracer [OPTIONS]
+
+A raytracer
+
+Optional arguments:
+  -h,--help             Show this help message and exit
+  -f,--fov FOV          The field of view.
+  -w,--write-file WRITE_FILE
+                        Write output to a file.
+  -s,--write-stdout     Write output to stdout.
 ```
 
-To write the result to stdout, pass nothing and pipe it to a suitable program, e.g.
+For example, to build, run with a fov of 90, write to stdout and pipe to display
+
 ```bash
-cargo run | display
+cargo run -- -f 90 -s | display
 ```
 
 There are some tests as well, run them with

@@ -1,10 +1,11 @@
+extern crate argparse;
 extern crate rusttracer;
 
+use argparse::{ArgumentParser, Store, StoreTrue};
 use rusttracer::math::Vector3;
 use rusttracer::ppm;
 use rusttracer::raytracing::{Camera, Scene};
 use rusttracer::shapes::Sphere;
-use std::env;
 use std::f64;
 use std::io::{self, Write};
 
@@ -12,12 +13,36 @@ const WIDTH: u16 = 512;
 const HEIGHT: u16 = 512;
 
 fn main() {
-    let ppm = raytrace();
+    let mut field_of_view = 75.0;
+    let mut write_file = "".to_string();
+    let mut write_to_stdout = false;
+    {
+        let mut parser = ArgumentParser::new();
+        parser.set_description("A raytracer");
+        parser
+            .refer(&mut field_of_view)
+            .add_option(&["-f", "--fov"], Store, "The field of view.");
+        parser.refer(&mut write_file).add_option(
+            &["-w", "--write-file"],
+            Store,
+            "Write output to a file.",
+        );
+        parser.refer(&mut write_to_stdout).add_option(
+            &["-s", "--write-stdout"],
+            StoreTrue,
+            "Write output to stdout.",
+        );
 
-    if let Some(arg) = env::args().nth(1) {
-        ppm.write_file(&arg).expect("Could not write file");
-    } else {
-        // Call like cargo run | display
+        parser.parse_args_or_exit();
+    }
+
+    let ppm = raytrace(field_of_view);
+
+    if write_file != "" {
+        ppm.write_file(&write_file).expect("Could not write file");
+    }
+
+    if write_to_stdout {
         if let Err(e) = io::stdout().write(&ppm.get_bytes()) {
             println!("Could not write to stdout {}", e);
         }
@@ -49,10 +74,15 @@ fn add_spheres(scene: &mut Scene) {
     ));
 }
 
-fn raytrace() -> ppm::PPM {
+fn raytrace(fov: f64) -> ppm::PPM {
     let mut scene = Scene::new(Sphere::new_default_color(Vector3::new(0.0, -5.0, 4.0), 1.0));
     add_spheres(&mut scene);
-    let camera = Camera::new_at_zero(WIDTH as f64, HEIGHT as f64, 90.0);
+    let camera = Camera::new(
+        Vector3::new(0.0, 0.0, -5.0),
+        WIDTH as f64,
+        HEIGHT as f64,
+        fov,
+    );
     let mut ppm_img = ppm::PPM::new(WIDTH as u32, HEIGHT as u32);
 
     for x in 0..WIDTH {
