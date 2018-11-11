@@ -48,7 +48,9 @@ impl Scene {
         // Check where the light sphere intersects with the shadow ray, sent from the
         // hit_spheres surface. This is t_light
         if let Some(t_light) = self.light.intersect(&shadow_ray) {
-            // Was t_res
+            
+            // We only care about the nearest object we hit in the scene, not which one
+            // If we hit nothing, f64::MAX is returned which fails the next if clause
             let (_, t_scene) = self.trace_scene(&shadow_ray);
 
             if t_scene < t_light {
