@@ -22,7 +22,6 @@ impl Scene {
     }
 
     pub fn trace_scene(&self, ray: &Ray) -> (Option<&Sphere>, f64) {
-        // TODO Is it possible to write this differently?
         let mut t_result = f64::MAX;
         let mut hit_sphere: Option<&Sphere> = None;
 

@@ -59,7 +59,6 @@ impl Sphere {
             let t_minus = (-b - discr.sqrt()) / (2.0 * a);
 
             // Return the one thats closer to the rays origin, which is the smaller t
-
             let t_result = if t_plus < t_minus { t_plus } else { t_minus };
 
             if t_result < 0.00001 {
@@ -76,6 +75,7 @@ impl Sphere {
 #[cfg(test)]
 mod tests {
     use super::*;
+    use std::f64::consts;
 
     #[test]
     fn test_sphere_intersection() {
@@ -83,6 +83,26 @@ mod tests {
         let ray = Ray::new(Vector3::zero(), Vector3::new(0.0, 0.0, 1.0));
         if let Some(t_result) = sp.intersect(&ray) {
             assert_eq!(t_result, 1.0);
+        } else {
+            panic!();
+        }
+    }
+
+    #[test]
+    fn test_sphere_intersection_2() {
+        // Rotate the point 1,0 which is on the circle towards 3,2 by 45 degrees
+        // Rotating a point s,t by an angle to u,v: 
+        // u = s*cos(angle) + t*sin(angle)
+        // v = -s*sin(angle) + t*cos(angle)
+        // The intersection should then be at height 2 * sin(pi/4) = 1.41...
+        // The x value has the same value except shifted by 3
+        let sp = Sphere::new_default_color(Vector3::new(0.0, 0.0, 3.0), 2.0);
+        let ray = Ray::new(
+            Vector3::new(0.0, 2.0 * (consts::PI / 4.0).sin(), 0.0),
+            Vector3::new(0.0, 0.0, 1.0),
+        );
+        if let Some(t_result) = sp.intersect(&ray) {
+            assert!((t_result - (3.0 - 2.0 * (consts::PI / 4.0).sin()).abs()) < 1e-14);
         } else {
             panic!();
         }
