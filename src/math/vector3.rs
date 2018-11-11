@@ -1,5 +1,5 @@
-use std::f64;
 use std::clone::Clone;
+use std::f64;
 use std::ops::{Add, Div, Mul, Rem, Sub};
 
 #[derive(Debug)]
@@ -24,6 +24,18 @@ impl Vector3 {
 
     pub fn green() -> Vector3 {
         Vector3::new(0.0, 255.0, 0.0)
+    }
+
+    pub fn purple() -> Vector3 {
+        Vector3::new(255.0, 0.0, 255.0)
+    }
+
+    pub fn cyan() -> Vector3 {
+        Vector3::new(255.0, 255.0, 0.0)
+    }
+
+    pub fn orange() -> Vector3 {
+        Vector3::new(255.0, 153.0, 0.0)
     }
 
     pub fn normalize(&self) -> Vector3 {

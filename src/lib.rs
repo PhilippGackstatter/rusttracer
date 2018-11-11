@@ -1,3 +1,3 @@
-pub mod camera;
-pub mod ppm;
 pub mod math;
+pub mod ppm;
+pub mod raytracing;
