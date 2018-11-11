@@ -2,7 +2,8 @@ extern crate rusttracer;
 
 use rusttracer::math::Vector3;
 use rusttracer::ppm;
-use rusttracer::raytracing::{Camera, Scene, Sphere};
+use rusttracer::raytracing::{Camera, Scene};
+use rusttracer::shapes::Sphere;
 use std::env;
 use std::f64;
 use std::io::{self, Write};

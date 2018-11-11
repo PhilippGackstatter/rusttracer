@@ -30,6 +30,7 @@ impl Sphere {
     }
 
     pub fn intersect(&self, ray: &Ray) -> Option<f64> {
+        // From http://ambrsoft.com/TrigoCalc/Sphere/SpherLineIntersection_.htm
         let x1 = ray.origin.x;
         let x2 = ray.direction.x + ray.origin.x;
         let x3 = self.origin.x;
@@ -50,8 +51,6 @@ impl Sphere {
 
         let discr = b.powi(2) - 4.0 * a * c;
 
-        // TODO Implement with match
-        // That requires implementing compare for f64
         if discr < 0.0 {
             // no intersection
             None
@@ -59,12 +58,8 @@ impl Sphere {
             let t_plus = (-b + discr.sqrt()) / (2.0 * a);
             let t_minus = (-b - discr.sqrt()) / (2.0 * a);
 
-            // TODO Find the proper way to init t_result
-            // let mut t_result = f64::MAX;
-
             // Return the one thats closer to the rays origin, which is the smaller t
-            // TODO Pick the smaller one if both are positive, otherwise the positive one
-            // Negative indicates that sth behind the camera was hit
+
             let t_result = if t_plus < t_minus { t_plus } else { t_minus };
 
             if t_result < 0.00001 {
@@ -74,6 +69,22 @@ impl Sphere {
             Some(t_result)
         } else {
             Some(-b / (2.0 * a))
+        }
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn test_sphere_intersection() {
+        let sp = Sphere::new_default_color(Vector3::new(0.0, 0.0, 3.0), 2.0);
+        let ray = Ray::new(Vector3::zero(), Vector3::new(0.0, 0.0, 1.0));
+        if let Some(t_result) = sp.intersect(&ray) {
+            assert_eq!(t_result, 1.0);
+        } else {
+            panic!();
         }
     }
 }

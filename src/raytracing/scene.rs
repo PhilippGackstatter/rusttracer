@@ -1,6 +1,7 @@
-use std::f64;
 use math::Vector3;
-use raytracing::{Sphere, Ray};
+use raytracing::Ray;
+use shapes::Sphere;
+use std::f64;
 
 pub struct Scene {
     pub spheres: Vec<Sphere>,
@@ -42,11 +43,7 @@ impl Scene {
         (hit_sphere, t_result)
     }
 
-    pub fn compute_color(
-        &self,
-        intersection_point: Vector3,
-        hit_sphere: &Sphere,
-    ) -> Vector3 {
+    pub fn compute_color(&self, intersection_point: Vector3, hit_sphere: &Sphere) -> Vector3 {
         let point_to_light = &self.light.origin - &intersection_point;
         let shadow_ray = Ray::new(intersection_point.clone(), point_to_light.clone());
 
