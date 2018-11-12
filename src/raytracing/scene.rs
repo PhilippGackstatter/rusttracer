@@ -6,6 +6,7 @@ use std::f64;
 pub struct Scene {
     pub spheres: Vec<Sphere>,
     pub light: Sphere,
+    pub ambient_light: f64,
 }
 
 impl Scene {
@@ -13,6 +14,7 @@ impl Scene {
         Scene {
             spheres: Vec::new(),
             light,
+            ambient_light: 0.2,
         }
     }
 
@@ -44,35 +46,32 @@ impl Scene {
     pub fn compute_color(&self, intersection_point: Vector3, hit_sphere: &Sphere) -> Vector3 {
         let point_to_light = &self.light.origin - &intersection_point;
         let shadow_ray = Ray::new(intersection_point.clone(), point_to_light.clone());
+        // This is the lambertian coefficient for *this* object.
+        // This should be supplied by every object's material.
+        let diffuse_coefficient = 2.8;
+        // The base color is the color of the object scaled by the ambient light intensity
+        let mut color = &Vector3::zero() + &(&hit_sphere.color * self.ambient_light);
 
-        // Check where the light sphere intersects with the shadow ray, sent from the
-        // hit_spheres surface. This is t_light
+        // Check at what distnace t_light the light sphere intersects with the shadow ray,
+        // sent from the hit_spheres surface.
         if let Some(t_light) = self.light.intersect(&shadow_ray) {
-            
-            // We only care about the nearest object we hit in the scene, not which one
-            // If we hit nothing, f64::MAX is returned which fails the next if clause
-            let (_, t_scene) = self.trace_scene(&shadow_ray);
+            let (hit_object, t_scene) = self.trace_scene(&shadow_ray);
 
-            if t_scene < t_light {
-                // We hit something in the scene before we hit the light
-                return Vector3::zero();
-            } else {
-                // Otherwise we have direct illumination from the light source
+            // Only if we didnt hit anything or if the light is closer than the object we hit
+            // meaning, there is no object between this point and the light do we calculate shading
+            if hit_object.is_none() || t_light > t_scene {
+                // Otherwise we have illumination from the light source
                 let normal = hit_sphere.get_normal(&intersection_point);
-                let angle = normal.angle(point_to_light.normalize());
-                if angle > 90.0 {
-                    return Vector3::zero();
-                } else {
-                    // Map angle to a value between [0, 1] and invert it
-                    let scalar = 1.0 - angle / 90.0;
-                    return &hit_sphere.color * scalar;
+                let mut dot_prod = &normal % &point_to_light.normalize();
+                // Negative dot products mean the angle was larger than 90, so we ignore
+                // the contribution from this light
+                if dot_prod > 0.0 {
+                    color = &color + &(&color * (dot_prod * diffuse_coefficient));
                 }
             }
-        // In this case we should always hit the light, since we have specially constructed a
-        // ray that goes from the hit_sphere to the light sphere
-        } else {
-            Vector3::zero()
         }
+
+        return color;
     }
 }
 
@@ -89,7 +88,11 @@ mod tests {
 
         let color = scene.compute_color(Vector3::new(0.0, 1.0, 3.0), &scene.spheres[0]);
 
-        assert_eq!(color, Vector3::red())
+        assert_eq!(
+            color,
+            &(&Vector3::red() * scene.ambient_light)
+                + &(&Vector3::red() * (scene.ambient_light * 2.8))
+        );
     }
 
 }

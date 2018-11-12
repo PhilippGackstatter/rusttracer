@@ -36,3 +36,13 @@ There are some tests as well, run them with
 ```bash
 cargo test
 ```
+
+## Resources
+
+### Code
+[A nice walkthrough for a raytracer with the simplified rendering equation](https://tmcw.github.io/literate-raytracer/)
+
+### Theory
+[The free online version of *Physically Based Rendering*](http://www.pbr-book.org/3ed-2018/Introduction/Photorealistic_Rendering_and_the_Ray-Tracing_Algorithm.html)
+
+[The amazing TU Wien rendering course](https://www.youtube.com/playlist?list=PLujxSBD-JXgnGmsn7gEyN28P1DnRZG7qi)

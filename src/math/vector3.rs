@@ -52,11 +52,6 @@ impl Vector3 {
         (self.x.powi(2) + self.y.powi(2) + self.z.powi(2)).sqrt()
     }
 
-    pub fn angle(&self, v: Vector3) -> f64 {
-        let dot_product = self % &v;
-        let angle = dot_product.acos() / self.len() * v.len();
-        angle * 180.0 / f64::consts::PI
-    }
 }
 
 impl Clone for Vector3 {
@@ -73,7 +68,9 @@ impl<'a, 'b> Rem<&'b Vector3> for &'a Vector3 {
     type Output = f64;
 
     fn rem(self, vec: &'b Vector3) -> f64 {
-        self.x * vec.x + self.y * vec.y + self.z * vec.z
+        self.x * vec.x + 
+        self.y * vec.y + 
+        self.z * vec.z
     }
 }
 
@@ -147,3 +144,26 @@ impl PartialEq for Vector3 {
 }
 
 impl Eq for Vector3 {}
+
+#[cfg(test)]
+mod test {
+    use super::*;
+
+    #[test]
+    fn test_dot_product() {
+        
+        // let light = Vector3::new(0.0, 5.0, 5.0);
+        // let point = Vector3::new(0.0, 1.0, 1.0);
+        // let point_to_light = &light - &point;
+
+        let angle1 = &Vector3::new(0.0, 0.0, 1.0) % &Vector3::new(0.0, 0.0, 1.0);
+        let angle2 = &Vector3::new(0.0, 0.0, 1.0) % &Vector3::new(0.0, 1.0, 1.0);
+        let angle3 = &Vector3::new(0.0, 0.0, 1.0) % &Vector3::new(0.0, 1.0, 0.0);
+        // These point in the same direction, dot product is 1
+        assert_eq!(angle1, 1.0);
+        // These are at a 45 degree angle, dot product is sqrt(2)
+        assert_eq!(angle2, 1.0);
+        // These are orthogonal, dot product is 0
+        assert_eq!(angle3, 0.0);
+    }
+}
