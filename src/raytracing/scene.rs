@@ -59,37 +59,43 @@ impl Scene {
         // The base color is the color of the object scaled by the ambient light intensity
         let mut color = &Vector3::zero() + &(&hit_sphere.color * self.ambient_light);
 
-        // Check at what distnace t_light the light sphere intersects with the shadow ray,
+        // Check at what distance t_light the light sphere intersects with the shadow ray,
         // sent from the hit_spheres surface.
-        if let Some(t_light) = self.light.intersect(&shadow_ray) {
+        // We have to hit the light, therefore have to have a result, 
+        // otherwise the calculation setup was wrong
+        let t_light = self.light.intersect(&shadow_ray).unwrap();
+
+        let (hit_object, t_scene) = self.trace_scene(&shadow_ray);
+
+        // Only if we didnt hit anything or if the light is closer than the object we hit
+        // -- meaning, there is no object between this point and the light -- do we calculate shading
+        if hit_object.is_none() || t_light < t_scene {
+            // We have illumination from the light source
             let normal = hit_sphere.get_normal(&intersection_point);
-            // Lambertian Shading
-            {
-                let (hit_object, t_scene) = self.trace_scene(&shadow_ray);
-                // Only if we didnt hit anything or if the light is closer than the object we hit
-                // meaning, there is no object between this point and the light do we calculate shading
-                if hit_object.is_none() || t_light > t_scene {
-                    // Otherwise we have illumination from the light source
-                    let mut dot_prod = &normal % &point_to_light.normalize();
-                    // Negative dot products mean the angle was larger than 90, so we ignore
-                    // the contribution from this light
-                    if dot_prod > 0.0 {
-                        color = &color + &(&color * (dot_prod * lambertian_coefficient));
-                    }
-                }
-            }
+
+            // Lambert Shading
+            let lambert_contribution = self.lambert_shading(&normal, &point_to_light, lambertian_coefficient);
+            color = &color + &(&color * lambert_contribution);
+
             // Specular Shading
-            let spec_contrib =
+            let specular_contribution =
                 self.specular_shading(&ray, normal, point_to_light, shininess_factor);
-            color = &color + &(&color * spec_contrib);
+            color = &color + &(&color * specular_contribution);
         }
 
-        // Don't allow values larger than that
+        // Don't allow values larger than 255
         color.x = color.x.min(255.0);
         color.y = color.y.min(255.0);
         color.z = color.z.min(255.0);
 
         return color;
+    }
+
+    fn lambert_shading(&self, normal: &Vector3, to_light: &Vector3, lambertian_coefficient: f64) -> f64 {
+        let dot_prod = normal % &to_light.normalize();
+        // Negative dot products mean the angle was larger than 90, so we ignore
+        // the contribution in that case
+        (dot_prod * lambertian_coefficient).max(0.0)
     }
 
     fn specular_shading(
@@ -115,8 +121,6 @@ impl Scene {
         let specular_contribution = dot_prod.powi(shininess_factor);
         // Only return values greater than 0
         return specular_contribution.max(0.0);
-        
-        
     }
 }
 
