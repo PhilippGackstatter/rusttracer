@@ -53,7 +53,7 @@ impl Camera {
         match hit_sphere {
             Some(sph) => {
                 let intersection_point = ray.get_coordinates(t);
-                color = scene.compute_color(intersection_point, &sph);
+                color = scene.compute_color(&ray, intersection_point, &sph);
             }
             None => (),
         }

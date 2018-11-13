@@ -68,7 +68,7 @@ fn add_spheres(scene: &mut Scene) {
     ));
 
     scene.add_sphere(Sphere::new(
-        Vector3::new(-3.5, 2.5, 5.0),
+        Vector3::new(-3.5, -5.0, 5.0),
         0.8,
         Vector3::green(),
     ));

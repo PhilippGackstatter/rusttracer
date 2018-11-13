@@ -46,3 +46,5 @@ cargo test
 [The free online version of *Physically Based Rendering*](http://www.pbr-book.org/3ed-2018/Introduction/Photorealistic_Rendering_and_the_Ray-Tracing_Algorithm.html)
 
 [The amazing TU Wien rendering course](https://www.youtube.com/playlist?list=PLujxSBD-JXgnGmsn7gEyN28P1DnRZG7qi)
+
+[The explanation about projection and how it relates to vector reflection is top notch](https://www.youtube.com/watch?v=NOBhfEHOYZs)
