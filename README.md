@@ -7,7 +7,7 @@ Here's what it can do at the moment.
 
 ![Four raytraced spheres](https://i.imgur.com/J3mXJ3H.png)
 
-## Build & Run
+# Build & Run
 
 The binary accepts a few command line arguments.
 
@@ -37,14 +37,20 @@ There are some tests as well, run them with
 cargo test
 ```
 
-## Resources
+# Resources
 
-### Code
+## Code
 [A nice walkthrough for a raytracer with the simplified rendering equation](https://tmcw.github.io/literate-raytracer/)
 
-### Theory
+## Theory
 [The free online version of *Physically Based Rendering*](http://www.pbr-book.org/3ed-2018/Introduction/Photorealistic_Rendering_and_the_Ray-Tracing_Algorithm.html)
 
 [The amazing TU Wien rendering course](https://www.youtube.com/playlist?list=PLujxSBD-JXgnGmsn7gEyN28P1DnRZG7qi)
 
+### Vector Math
 [The explanation about projection and how it relates to vector reflection is top notch](https://www.youtube.com/watch?v=NOBhfEHOYZs)
+
+### Camera
+[Well explained w/ schematics](https://www.scratchapixel.com/lessons/3d-basic-rendering/ray-tracing-generating-camera-rays/generating-camera-rays)
+
+[TU Wien camera lecture](https://youtu.be/ZhN5-o397QI)
