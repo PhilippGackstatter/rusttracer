@@ -61,7 +61,7 @@ impl Scene {
 
         // Check at what distance t_light the light sphere intersects with the shadow ray,
         // sent from the hit_spheres surface.
-        // We have to hit the light, therefore have to have a result, 
+        // We have to hit the light, therefore have to have a result,
         // otherwise the calculation setup was wrong
         let t_light = self.light.intersect(&shadow_ray).unwrap();
 
@@ -74,7 +74,8 @@ impl Scene {
             let normal = hit_sphere.get_normal(&intersection_point);
 
             // Lambert Shading
-            let lambert_contribution = self.lambert_shading(&normal, &point_to_light, lambertian_coefficient);
+            let lambert_contribution =
+                self.lambert_shading(&normal, &point_to_light, lambertian_coefficient);
             color = &color + &(&color * lambert_contribution);
 
             // Specular Shading
@@ -91,7 +92,12 @@ impl Scene {
         return color;
     }
 
-    fn lambert_shading(&self, normal: &Vector3, to_light: &Vector3, lambertian_coefficient: f64) -> f64 {
+    fn lambert_shading(
+        &self,
+        normal: &Vector3,
+        to_light: &Vector3,
+        lambertian_coefficient: f64,
+    ) -> f64 {
         let dot_prod = normal % &to_light.normalize();
         // Negative dot products mean the angle was larger than 90, so we ignore
         // the contribution in that case
@@ -142,25 +148,6 @@ mod tests {
             color,
             &(&Vector3::red() * scene.ambient_light)
                 + &(&Vector3::red() * (scene.ambient_light * 2.8))
-        );
-    }
-
-    #[test]
-    fn test_something() {
-        let viewer = Vector3::new(0.0, 1.0, 1.0);
-        // let light = Vector3::new(0.0, -1.0, 1.0);
-        let intersection_point = Vector3::zero();
-        let viewer_to_itrsctn = &intersection_point - &viewer;
-        assert_eq!(-0.0, 0.0);
-        assert_eq!(&viewer - &intersection_point, viewer_to_itrsctn.inverse());
-
-        let normal = Vector3::new(0.0, 1.0, 0.0);
-        let reflect = Vector3::new(1.0, -1.0, -1.0);
-        let reflected_light_ray = &reflect - &(&(&normal * (&reflect % &normal)) * 2.0);
-
-        assert_eq!(
-            reflected_light_ray,
-            Vector3::new(-reflect.x, 1.0, -reflect.z)
         );
     }
 
