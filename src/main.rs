@@ -7,6 +7,7 @@ use rusttracer::math::Vector3;
 use rusttracer::util::ppm;
 use rusttracer::raytracing::{Camera, Scene};
 use rusttracer::shapes::Sphere;
+use rusttracer::raytracing::Light;
 use rusttracer::util::image_output;
 use std::f64;
 use std::io::{self, Write};
@@ -83,7 +84,12 @@ fn add_spheres(scene: &mut Scene) {
 }
 
 fn raytrace(fov: f64) -> ppm::PPM {
-    let mut scene = Scene::new(Sphere::new_default_color(Vector3::new(0.0, -5.0, 4.0), 1.0));
+    let lights = vec![
+        Light::new(1.2, Vector3::new(0.0, -5.0, 4.0)),
+        Light::new(1.9, Vector3::new(-5.0, 0.0, 4.0)),
+        Light::new(1.5, Vector3::new(5.0, 0.0, 4.0))
+    ];
+    let mut scene = Scene::new(lights, 0.1);
     add_spheres(&mut scene);
     let camera = Camera::new(
         Vector3::new(0.0, 0.0, -5.0),

@@ -1,20 +1,21 @@
 use math::Vector3;
+use raytracing::Light;
 use raytracing::Ray;
 use shapes::Sphere;
 use std::f64;
 
 pub struct Scene {
     pub spheres: Vec<Sphere>,
-    pub light: Sphere,
+    pub lights: Vec<Light>,
     pub ambient_light: f64,
 }
 
 impl Scene {
-    pub fn new(light: Sphere) -> Scene {
+    pub fn new(lights: Vec<Light>, ambient_light: f64) -> Scene {
         Scene {
             spheres: Vec::new(),
-            light,
-            ambient_light: 0.2,
+            lights,
+            ambient_light,
         }
     }
 
@@ -49,47 +50,50 @@ impl Scene {
         intersection_point: Vector3,
         hit_sphere: &Sphere,
     ) -> Vector3 {
-        let point_to_light = &self.light.origin - &intersection_point;
-        let shadow_ray = Ray::new(intersection_point.clone(), point_to_light.clone());
         // This is the lambertian coefficient for *this* object.
         // This should be supplied by every object's material.
-        let lambertian_coefficient = 2.8;
+        let lambertian_coefficient = 1.7;
         // This determines the size of the specular highlight
         let shininess_factor = 25;
         // The base color is the color of the object scaled by the ambient light intensity
         let mut color = &Vector3::zero() + &(&hit_sphere.color * self.ambient_light);
 
-        // Check at what distance t_light the light sphere intersects with the shadow ray,
-        // sent from the hit_spheres surface.
-        // We have to hit the light, therefore have to have a result,
-        // otherwise the calculation setup was wrong
-        let t_light = self.light.intersect(&shadow_ray).unwrap();
+        for light in self.lights.iter() {
+            let point_to_light = &light.origin - &intersection_point;
+            // Get the distance t_light to the light
+            let t_light = point_to_light.len();
 
-        let (hit_object, t_scene) = self.trace_scene(&shadow_ray);
+            // We have to hit the light, therefore have to have a result,
+            // otherwise the calculation setup was wrong
+            // let t_light = light.intersect(&shadow_ray).unwrap();
 
-        // Only if we didnt hit anything or if the light is closer than the object we hit
-        // -- meaning, there is no object between this point and the light -- do we calculate shading
-        if hit_object.is_none() || t_light < t_scene {
-            // We have illumination from the light source
-            let normal = hit_sphere.get_normal(&intersection_point);
+            let shadow_ray = Ray::new(intersection_point.clone(), point_to_light.clone());
+            let (hit_object, t_scene) = self.trace_scene(&shadow_ray);
 
-            // Lambert Shading
-            let lambert_contribution =
-                self.lambert_shading(&normal, &point_to_light, lambertian_coefficient);
-            color = &color + &(&color * lambert_contribution);
+            // Only if we didnt hit anything or if the light is closer than the object we hit
+            // -- meaning, there is no object between this point and the light -- do we calculate shading
+            if hit_object.is_none() || t_light < t_scene {
+                // We have illumination from the light source
+                let normal = hit_sphere.get_normal(&intersection_point);
 
-            // Specular Shading
-            let specular_contribution =
-                self.specular_shading(&ray, normal, point_to_light, shininess_factor);
-            color = &color + &(&color * specular_contribution);
+                // Lambert Shading
+                let lambert_contribution =
+                    self.lambert_shading(&normal, &point_to_light, lambertian_coefficient)
+                        * light.intensity;
+                color = &color + &(&color * lambert_contribution);
+
+                // Specular Shading
+                let specular_contribution =
+                    self.specular_shading(&ray, normal, point_to_light, shininess_factor);
+                color = &color + &(&color * specular_contribution);
+            }
+
+            // Don't allow values larger than 255
+            color.x = color.x.min(255.0);
+            color.y = color.y.min(255.0);
+            color.z = color.z.min(255.0);
         }
-
-        // Don't allow values larger than 255
-        color.x = color.x.min(255.0);
-        color.y = color.y.min(255.0);
-        color.z = color.z.min(255.0);
-
-        return color;
+        color
     }
 
     fn lambert_shading(
@@ -137,7 +141,9 @@ mod tests {
     #[test]
     fn test_compute_color() {
         // The light is above the sphere and doesnt intersect with it
-        let mut scene = Scene::new(Sphere::new_default_color(Vector3::new(0.0, 7.0, 3.0), 1.0));
+        let lights = vec![Light::new(1.2, Vector3::new(0.0, 7.0, 3.0))];
+        let mut scene = Scene::new(lights, 0.1);
+
         let sphere = Sphere::new(Vector3::new(0.0, 0.0, 3.0), 1.0, Vector3::red());
         let ray = Ray::new(Vector3::new(0.0, 0.0, 0.0), Vector3::new(0.0, 0.0, 0.0));
         scene.add_sphere(sphere);
