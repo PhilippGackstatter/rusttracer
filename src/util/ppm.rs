@@ -13,7 +13,7 @@ pub struct RGB {
 
 impl RGB {
     pub fn new(r: u8, g: u8, b: u8) -> RGB {
-        RGB { r, g, b }
+        RGB { r, g, b}
     }
 }
 
@@ -53,7 +53,11 @@ impl PPM {
                 let r = self.data[offset];
                 let g = self.data[offset + 1];
                 let b = self.data[offset + 2];
-                Some(RGB { r: r, g: g, b: b })
+                Some(RGB {
+                    r: r,
+                    g: g,
+                    b: b,
+                })
             }
             None => None,
         }
@@ -85,5 +89,25 @@ impl PPM {
         let mut ppm_bytes = format!("P6 {} {} 255\n", self.width, self.height).into_bytes();
         ppm_bytes.append(&mut self.data.clone());
         ppm_bytes
+    }
+
+    pub fn get_raw_bytes(&self) -> Vec<u8> {
+        let num_rgb_values = self.data.len() / 3;
+        let mut rgba_bytes: Vec<u8> = Vec::with_capacity((num_rgb_values * 4) as usize);
+        for i in 0..num_rgb_values {
+            rgba_bytes.push(self.data[i * 3 + 0]);
+            rgba_bytes.push(self.data[i * 3 + 1]);
+            rgba_bytes.push(self.data[i * 3 + 2]);
+            rgba_bytes.push(255);
+        }
+        rgba_bytes
+    }
+
+    pub fn get_width(&self) -> u32 {
+        self.width
+    }
+
+    pub fn get_height(&self) -> u32 {
+        self.height
     }
 }

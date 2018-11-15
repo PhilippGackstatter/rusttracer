@@ -1,6 +1,6 @@
 use math::Vector3;
 use raytracing::{Ray, Scene};
-use ppm;
+use util::ppm;
 
 pub struct Camera {
     origin: Vector3,

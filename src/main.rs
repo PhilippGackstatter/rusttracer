@@ -1,11 +1,13 @@
 extern crate argparse;
+extern crate png;
 extern crate rusttracer;
 
 use argparse::{ArgumentParser, Store, StoreTrue};
 use rusttracer::math::Vector3;
-use rusttracer::ppm;
+use rusttracer::util::ppm;
 use rusttracer::raytracing::{Camera, Scene};
 use rusttracer::shapes::Sphere;
+use rusttracer::util::image_output;
 use std::f64;
 use std::io::{self, Write};
 
@@ -39,7 +41,13 @@ fn main() {
     let ppm = raytrace(field_of_view);
 
     if write_file != "" {
-        ppm.write_file(&write_file).expect("Could not write file");
+        image_output::write_png_img(
+            &ppm.get_raw_bytes(),
+            ppm.get_width(),
+            ppm.get_height(),
+            write_file,
+        );
+        // ppm.write_file(&write_file).expect("Could not write file");
     }
 
     if write_to_stdout {
