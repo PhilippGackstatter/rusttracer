@@ -3,6 +3,17 @@ use std::cmp::PartialEq;
 use std::f64;
 use std::ops::{Add, Div, Mul, Rem, Sub};
 
+#[macro_export]
+macro_rules! vec3 {
+    ($x:expr, $y:expr, $z:expr) => {
+        Vector3 {
+            x: $x as f64,
+            y: $y as f64,
+            z: $z as f64
+        }
+    };
+}
+
 #[derive(Debug)]
 pub struct Vector3 {
     pub x: f64,

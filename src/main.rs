@@ -4,18 +4,19 @@ extern crate rusttracer;
 
 use argparse::{ArgumentParser, Store, StoreTrue};
 use rusttracer::math::Vector3;
-use rusttracer::util::ppm;
+use rusttracer::raytracing::Light;
 use rusttracer::raytracing::{Camera, Scene};
 use rusttracer::shapes::Sphere;
-use rusttracer::raytracing::Light;
 use rusttracer::util::image_output;
+use rusttracer::util::ppm;
+use rusttracer::vec3;
 use std::f64;
 use std::io::{self, Write};
-
 const WIDTH: u16 = 512;
 const HEIGHT: u16 = 512;
 
 fn main() {
+
     let mut field_of_view = 75.0;
     let mut write_file = "".to_string();
     let mut write_to_stdout = false;
@@ -60,24 +61,24 @@ fn main() {
 
 fn add_spheres(scene: &mut Scene) {
     scene.add_sphere(Sphere::new(
-        Vector3::new(0.0, 0.0, 5.0),
+        vec3!(0, 0, 5),
         1.5,
         Vector3::red(),
     ));
     scene.add_sphere(Sphere::new(
-        Vector3::new(-2.5, -2.0, 8.0),
+        vec3!(-2.5, -2, 8),
         1.0,
         Vector3::purple(),
     ));
 
     scene.add_sphere(Sphere::new(
-        Vector3::new(2.0, 2.0, 5.0),
+        vec3!(2, 2, 5),
         1.0,
         Vector3::orange(),
     ));
 
     scene.add_sphere(Sphere::new(
-        Vector3::new(-3.5, -5.0, 5.0),
+        vec3!(-3.5, -5, 5),
         0.8,
         Vector3::green(),
     ));
@@ -85,14 +86,14 @@ fn add_spheres(scene: &mut Scene) {
 
 fn raytrace(fov: f64) -> ppm::PPM {
     let lights = vec![
-        Light::new(1.2, Vector3::new(0.0, -5.0, 4.0)),
-        Light::new(1.9, Vector3::new(-5.0, 0.0, 4.0)),
-        Light::new(1.5, Vector3::new(5.0, 0.0, 4.0))
+        Light::new(1.2, vec3!(0, -5, 4)),
+        Light::new(1.9, vec3!(-5, 0, 4)),
+        Light::new(1.5, vec3!(5, 0, 4)),
     ];
     let mut scene = Scene::new(lights, 0.1);
     add_spheres(&mut scene);
     let camera = Camera::new(
-        Vector3::new(0.0, 0.0, -5.0),
+        vec3!(0, 0, -5),
         WIDTH as f64,
         HEIGHT as f64,
         fov,
